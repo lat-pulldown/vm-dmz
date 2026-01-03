@@ -5,6 +5,7 @@ For the full setup, use [otlab](https://github.com/lat-pulldown/otlab) with this
 ---
 
 Shell script for setting up multipass VM. Contains Conpot, Thingsboard, and Caldera.   
+
 Please note that this shell script is optimized for Apple Silicon (ARM-based macOS). If you are using an Intel-based Mac, Windows (AMD/Intel), or Linux machine, some commands—especially Docker image tags or architecture-specific settings—may need to be adjusted accordingly.
 
 ## Initial Setup
@@ -16,7 +17,7 @@ brew install --cask multipass
 Verify with `multipass version` and `multipass list`
 ### Create a VM
 ```
-multipass launch 22.04 \
+multipass launch lts \
   --name dmz \
   --cpus 4 \
   --memory 8G \

@@ -41,5 +41,4 @@ chmod +x setup_XXX.sh
 - Conpot - [mushorg/conpot](https://github.com/mushorg/conpot)
 - Thingsboard - [thingsboard/thingsboard](https://github.com/thingsboard/thingsboard)
 - Caldera - [mitre/caldera](https://github.com/mitre/caldera)
-- Caldera OT-Plugins - [mitre/caldera-ot](https://github.com/mitre/caldera-ot)
->>>>>>> 10fe1f5 (Initial commit)
+- Caldera OT-Plugins - [mitre/caldera-ot](https://github.com/mitre/caldera-ot)  

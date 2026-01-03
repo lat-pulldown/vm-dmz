@@ -1,74 +1,39 @@
 **Visit [here](https://lat-pulldown.github.io/otlab) for user guide.**  
 
+For the full setup, use [otlab](https://github.com/lat-pulldown/otlab) with this repo for setting up the local enviornment.
 ---
 
 Shell script for setting up multipass VM. Contains Conpot, Thingsboard, and Caldera
 
-
-## Prerequisite
-Requires Python 3.8+
-
-Install necessary libraries with
+## Initial Setup
+### Install [Multipass](https://canonical.com/multipass)
+From Homebrew Terminal
 ```
-pip3 install -r requirements.txt
+brew install --cask multipass
 ```
-
-## Dataset
-Contains 1 training and 3 testing datasets
-* `train.csv`: Normal polling
-* `noise.csv`: External traffic to Conpot
-* `attack.csv`: Emulated cyber attacks from Caldera-OT
-* `mix.csv`: Mix of noise and attack
-* `_tf.csv`: For isolation forest and variate models
-
-## Evalutating models
-**Default dataset:** `mix.csv`  
-
-Change with `-data ../data/XX.csv` (`-cyber ../data/XX.csv -phys ../data/YY.csv` for fusion_test.py)
-
-### 1. Isolation Forest
-- Navigate to the directory:
-```cd /otlab/iforest```
-- Train with
-```python3 iforest.py -mode train```
-- Test with
-```python3 iforest.py -mode test```
-
-### 1. 1D-CNN
-- Navigate to the directory:
-```cd /otlab/cnn```
-- Train with
-```python3 cnn_train.py```
-- Test with
-```python3 cnn.py```
-
-### 1. DeepLog
-- Navigate to the directory:
-```cd /otlab/deeplog```
-- Train with
-```python3 model_train.py```
-- Test with
-```python3 model_test.py```
-
-### 1. Hybrid Variate
-- Navigate to the directory:
-```cd /otlab/hyvar```
-#### 1D-CNN-Transformer
-- Train with
-```python3 hybrid_train.py```
-- Test with
-```python3 hybrid_test.py```
-#### Tempurature-Variate
-- Train with
-```python3 var_train.py```
-- Test with
-```python3 var_test.py```
-#### Correlation Test
-- Test with 
-```python3 fusion_test.py```
-
-## Evaluation Results
-![](eval_report.png)
+Verify with `multipass version` and `multipass list`
+### Create a VM
+```
+multipass launch 22.04 \
+  --name dmz \
+  --cpus 4 \
+  --memory 8G \
+  --disk 40G
+```
+### Enter the shell
+```
+multipass shell dmz
+```
+`multipass stop dmz` to stop `dmz`, `multipass start dmz` to start again.  
+### Clone this [Github](https://github.com/lat-pulldown/vm-dmz)
+```
+git clone https://github.com/lat-pulldown/vm-dmz.git
+```
+### Build Conpot, Thingsboard, and Caldera (Use different terminals for each)
+```
+chmod +x setup_XXX.sh
+./setup_XXX.sh
+```
 
 ## Citation
 - DeepLog - [wuyifan18/DeepLog](https://github.com/wuyifan18/DeepLog)
@@ -76,3 +41,4 @@ Change with `-data ../data/XX.csv` (`-cyber ../data/XX.csv -phys ../data/YY.csv`
 - Thingsboard - [thingsboard/thingsboard](https://github.com/thingsboard/thingsboard)
 - Caldera - [mitre/caldera](https://github.com/mitre/caldera)
 - Caldera OT-Plugins - [mitre/caldera-ot](https://github.com/mitre/caldera-ot)
+>>>>>>> 10fe1f5 (Initial commit)

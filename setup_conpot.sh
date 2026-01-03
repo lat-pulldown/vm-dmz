@@ -18,9 +18,10 @@ sudo apt install -y docker.io docker-compose make git
 sudo systemctl enable docker
 sudo systemctl start docker
 
+# Add user to group for FUTURE sessions
 sudo usermod -aG docker $USER
 
-echo "[!] Docker group updated. Re-login may be required."
+echo "[!] Docker group updated. (Note: You may need to re-login for this to take effect in new shells)"
 sleep 2
 
 ########################################
@@ -31,7 +32,7 @@ mkdir -p ~/conpot
 cd ~/conpot
 
 ########################################
-# 3. Create Dockerfile (exact behavior)
+# 3. Create Dockerfile
 ########################################
 echo "[+] Writing Dockerfile"
 
@@ -54,6 +55,7 @@ RUN git clone https://github.com/mushorg/conpot.git . && \
 RUN adduser --disabled-password --gecos "" conpot && \
     mkdir -p /var/log/conpot && chown -R conpot:conpot /var/log/conpot
 
+# Create temp directories required by Conpot
 RUN mkdir -p /usr/local/lib/python3.8/site-packages/conpot/tests/data/data_temp_fs/ftp && \
     mkdir -p /usr/local/lib/python3.8/site-packages/conpot/tests/data/data_temp_fs/tftp && \
     chmod -R 777 /usr/local/lib/python3.8/site-packages/conpot/tests/data
@@ -68,10 +70,11 @@ CMD ["--template", "default", "--logfile", "/var/log/conpot/conpot.log", "-f", "
 EOF
 
 ########################################
-# 4. docker-compose.yml (exact ports)
+# 4. docker-compose.yml (FIXED)
 ########################################
 echo "[+] Writing docker-compose.yml"
 
+# FIX: Added the volume mount for new_modbus.xml so Conpot actually uses it
 cat << 'EOF' > docker-compose.yml
 version: "3.8"
 
@@ -85,11 +88,12 @@ services:
       - "161:16100/udp"
     volumes:
       - ./logs:/var/log/conpot
+      - ./new_modbus.xml:/usr/local/lib/python3.8/site-packages/conpot/templates/default/modbus.xml
     restart: unless-stopped
 EOF
 
 ########################################
-# 5. Makefile (workflow parity)
+# 5. Makefile
 ########################################
 echo "[+] Writing Makefile"
 
@@ -97,20 +101,20 @@ cat << 'EOF' > Makefile
 .PHONY: docker build-docker run-docker format
 
 build-docker:
-	docker build -t conpot:latest .
+    docker build -t conpot:latest .
 
 run-docker:
-	docker run --rm -it \
-		-p 80:8800 \
-		-p 102:10201 \
-		-p 502:5020 \
-		-p 161:16100/udp \
-		-p 47808:47808/udp \
-		-p 623:6230/udp \
-		conpot:latest
+    docker run --rm -it \
+        -p 80:8800 \
+        -p 102:10201 \
+        -p 502:5020 \
+        -p 161:16100/udp \
+        -p 47808:47808/udp \
+        -p 623:6230/udp \
+        conpot:latest
 
 format:
-	black .
+    black .
 EOF
 
 ########################################
@@ -151,19 +155,21 @@ echo "[+] Creating log directory"
 mkdir -p logs
 
 ########################################
-# 7. Build and run Conpot
+# 7. Build and run Conpot (FIXED)
 ########################################
 echo "[+] Building Conpot Docker image"
-docker-compose build
+# FIX: Added 'sudo' here because the script's user session doesn't know 
+# it's in the 'docker' group yet.
+sudo docker-compose build
 
 echo "[+] Starting Conpot"
-docker-compose up -d
+sudo docker-compose up -d
 
 ########################################
 # 8. Verification
 ########################################
 echo "[+] Verifying container status"
-docker ps
+sudo docker ps
 
 echo "[+] Listening ports"
 sudo ss -tulnp | grep -E ':(80|502|161)'
